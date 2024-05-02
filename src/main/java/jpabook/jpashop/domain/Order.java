@@ -22,6 +22,10 @@ public class Order {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "delivery_id")
+    private Delivery delivery;
+
     @Column(name = "order_date")
     private LocalDateTime orderDate;
 
