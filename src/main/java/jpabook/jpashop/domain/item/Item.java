@@ -1,9 +1,13 @@
 package jpabook.jpashop.domain.item;
 
 import jakarta.persistence.*;
+import jpabook.jpashop.domain.Category;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -25,5 +29,6 @@ public abstract class Item {
     @Column(name = "stock_quantity")
     private int stockQuantity;
 
-
+    @ManyToMany(mappedBy = "items")
+    private List<Category> categories = new ArrayList<>();
 }

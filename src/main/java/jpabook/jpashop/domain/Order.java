@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -26,10 +28,13 @@ public class Order {
     @JoinColumn(name = "delivery_id")
     private Delivery delivery;
 
+    @OneToMany(mappedBy = "order")
+    private List<OrderItem> orderItems = new ArrayList<>();
+
     @Column(name = "order_date")
     private LocalDateTime orderDate;
 
     @Enumerated(EnumType.STRING)
     @Column(name ="order_status")
-    private OrderStatus status;
+    private OrderStatus status; // 주문 상태: ORDER, CANCEL
 }
