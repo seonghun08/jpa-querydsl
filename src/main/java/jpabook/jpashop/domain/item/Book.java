@@ -3,9 +3,10 @@ package jpabook.jpashop.domain.item;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Getter
+@Getter @Setter
 public class Book extends Item {
 
     @Column(name = "author")

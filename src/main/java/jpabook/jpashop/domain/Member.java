@@ -1,20 +1,16 @@
-package jpabook.jpashop.domain.member;
+package jpabook.jpashop.domain;
 
 import jakarta.persistence.*;
-import jpabook.jpashop.domain.Address;
-import jpabook.jpashop.domain.BaseTimeEntity;
-import jpabook.jpashop.domain.Order;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter @Setter
+@DynamicInsert // DynamicInsert: 초기화 되지 않은 필드는 insert 쿼리에서 제외된다. (성능 개선)
+@NoArgsConstructor // (access = AccessLevel.PROTECTED)
 @Table(name = "member")
 public class Member extends BaseTimeEntity {
 
@@ -22,7 +18,7 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
     @Embedded

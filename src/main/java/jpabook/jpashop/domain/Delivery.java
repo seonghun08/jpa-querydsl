@@ -1,13 +1,17 @@
 package jpabook.jpashop.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Getter @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "delivery")
+@Getter @Setter
+@NoArgsConstructor
+@Table(name = "delivery", indexes = {
+        @Index(name = "idx_delivery_delivery_status", columnList = "delivery_status")
+})
 public class Delivery extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,4 +27,11 @@ public class Delivery extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "delivery_status")
     private DeliveryStatus status;
+
+    @Builder
+    public Delivery(Order order, Address address, DeliveryStatus status) {
+        this.order = order;
+        this.address = address;
+        this.status = status;
+    }
 }
