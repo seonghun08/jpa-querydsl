@@ -33,4 +33,8 @@ public class Member extends BaseTimeEntity {
         this.address = address;
         this.orders = orders;
     }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
 }

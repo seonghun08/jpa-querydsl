@@ -9,4 +9,6 @@ public interface MemberService {
     Long signUp(Member member);
 
     List<Member> findMembers();
+
+    void update(Long id, String name);
 }

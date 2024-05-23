@@ -27,6 +27,13 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository.findAll();
     }
 
+    @Override
+    public void update(Long id, String name) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+        member.updateName(name);
+    }
+
     private void validateDuplicateMember(Member member) {
         if (memberRepository.existsByName(member.getName())) {
             throw new IllegalArgumentException("중복된 이름이 존재합니다.");
