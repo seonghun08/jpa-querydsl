@@ -28,10 +28,9 @@ public class Member extends BaseTimeEntity {
     private List<Order> orders = new ArrayList<>();
 
     @Builder
-    public Member(String name, Address address, List<Order> orders) {
+    public Member(String name, Address address) {
         this.name = name;
         this.address = address;
-        this.orders = orders;
     }
 
     public void updateName(String name) {
