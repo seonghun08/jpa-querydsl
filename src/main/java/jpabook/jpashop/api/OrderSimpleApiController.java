@@ -24,6 +24,12 @@ import java.util.List;
  * Order
  * Order -> Member
  * Order -> Delivery
+ * -
+ * 쿼리 방식 선택 권장 순서
+ * 1. 우선 엔티티를 DTO 로 변환하는 방법을 선택한다.
+ * 2. 필요하면 fetch join 으로 성능을 최적화한다. -> 대부분의 성능 이슈는 여기서 해결 됨
+ * 3. 그래도 안된다면 DTO 로 직접 조회하는 방법을 사용한다.
+ * 4. 최후의 방법은 JPA 가 제공하는 네이티브 SQL 이나 스프링 JDBC Template 을 사용하여 SQL 을 직접 사용한다.
  */
 @RestController
 @RequiredArgsConstructor
