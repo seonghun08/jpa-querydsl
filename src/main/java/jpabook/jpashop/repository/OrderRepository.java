@@ -12,4 +12,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>, OrderReposi
 
     @Query("select o from Order o join fetch o.member m join fetch o.delivery d")
     List<Order> findAllWithMemberAndDelivery();
+
+    @Query("select o from Order o join fetch o.member m join fetch o.delivery d join fetch o.orderItems oi join fetch oi.item i")
+    List<Order> findAllWithItem();
 }
