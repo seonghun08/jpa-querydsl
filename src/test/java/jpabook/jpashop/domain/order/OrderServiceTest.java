@@ -10,7 +10,7 @@ import jpabook.jpashop.repository.ItemRepository;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.repository.MemberRepository;
 import jpabook.jpashop.exception.NotEnoughStockException;
-import jpabook.jpashop.repository.OrderRepository;
+import jpabook.jpashop.repository.order.OrderRepository;
 import jpabook.jpashop.service.OrderService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -110,9 +110,7 @@ class OrderServiceTest {
     }
 
     private Member createMember() {
-        Member member = new Member();
-        member.setName("회원");
-        member.setAddress(new Address("서울", "강가", "123-123"));
+        Member member = new Member("회원", new Address("서울", "강가", "123-123"));
         memberRepository.save(member);
         return member;
     }

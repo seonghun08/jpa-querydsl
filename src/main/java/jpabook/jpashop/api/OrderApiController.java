@@ -1,12 +1,12 @@
 package jpabook.jpashop.api;
 
 import jpabook.jpashop.domain.*;
-import jpabook.jpashop.repository.OrderRepository;
-import jpabook.jpashop.repository.query.OrderFlatDto;
-import jpabook.jpashop.repository.query.OrderItemQueryDto;
-import jpabook.jpashop.repository.query.OrderQueryDto;
-import jpabook.jpashop.repository.query.OrderQueryRepository;
-import jpabook.jpashop.repository.simplequery.OrderSimpleQueryRepository;
+import jpabook.jpashop.repository.order.OrderRepository;
+import jpabook.jpashop.repository.order.query.OrderFlatDto;
+import jpabook.jpashop.repository.order.query.OrderItemQueryDto;
+import jpabook.jpashop.repository.order.query.OrderQueryDto;
+import jpabook.jpashop.repository.order.query.OrderQueryRepository;
+import jpabook.jpashop.repository.order.simplequery.OrderSimpleQueryRepository;
 import jpabook.jpashop.service.OrderService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -64,6 +62,11 @@ public class OrderApiController {
                 .toList();
     }
 
+    /**
+     * V3에서 페이징 쿼리 해결방법
+     * ToOne 관계는 V3 처럼 fetch join 을 통해 최적화
+     * 컬렉션은 지연 로딩으로 유지하고 'hibernate.default_batch_fetch_size', '@BatchSize' 를 통해 최적화
+     */
     @GetMapping("/api/v3.1/orders")
     public List<OrderDto> ordersV3_paging(
             @RequestParam(value = "offset", defaultValue = "0") int offset,
@@ -74,6 +77,10 @@ public class OrderApiController {
                 .toList();
     }
 
+    /**
+     * JPA 에서 DTO 를 직접 조회한다.
+     * ToOne 관계는 join 쿼리로 바로 조회 후, 컬렉션 n 개수 만큼 쿼리를 조회하여 채운다. (N + 1 문제 유사?)
+     */
     @GetMapping("/api/v4/orders")
     public List<OrderQueryDto> ordersV4(
             @RequestParam(value = "offset", defaultValue = "0") int offset,
@@ -81,6 +88,10 @@ public class OrderApiController {
         return orderQueryRepository.findOrderQueryDtos(offset, limit);
     }
 
+    /**
+     * V4 의 문제점을 개선
+     * 일대다 관계인 컬렉션은 IN 절을 활용하여 메모리에 미리 조회하여 최적화한다.
+     */
     @GetMapping("/api/v5/orders")
     public List<OrderQueryDto> ordersV5(
             @RequestParam(value = "offset", defaultValue = "0") int offset,

@@ -1,6 +1,6 @@
-package jpabook.jpashop.repository;
+package jpabook.jpashop.repository.order;
 
-import jpabook.jpashop.repository.simplequery.OrderSimpleQueryDto;
+import jpabook.jpashop.repository.order.simplequery.OrderSimpleQueryDto;
 
 import java.util.List;
 

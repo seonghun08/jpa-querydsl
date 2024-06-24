@@ -1,4 +1,4 @@
-package jpabook.jpashop.repository.query;
+package jpabook.jpashop.repository.order.query;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
