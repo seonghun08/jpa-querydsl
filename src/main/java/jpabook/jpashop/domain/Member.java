@@ -13,9 +13,14 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "member")
 @ToString(of = {"id", "name", "age"})
+@NamedQuery( // 잘 사용하지는 않음 (엔티티는 엔티티 만, 쿼리는 지양한다.)
+        name = "Member.findByNames",
+        query = "select m from Member m where m.name = :name"
+)
 public class Member extends BaseTimeEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
 
@@ -43,6 +48,11 @@ public class Member extends BaseTimeEntity {
 
     public Member(String name) {
         this.name = name;
+    }
+
+    public Member(String name, int age) {
+        this.name = name;
+        this.age = age;
     }
 
     public Member(String name, int age, Team team) {

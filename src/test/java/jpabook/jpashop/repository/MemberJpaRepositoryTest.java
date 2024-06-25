@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -68,6 +69,26 @@ class MemberJpaRepositoryTest {
 
         long deletedCount = memberJpaRepository.count();
         assertThat(deletedCount).isEqualTo(0);
+    }
+
+    @Test
+    void paging() {
+        for (int i = 1; i < 10; i++) {
+            memberJpaRepository.save(new Member("member" + i, 10));
+        }
+
+        final int age = 10;
+        final int offset = 0;
+        final int limit = 3;
+
+        // memberRepository.findAll().forEach(m -> System.out.println("m = " + m));
+        List<Member> members = memberJpaRepository.findByPage(age, offset, limit);
+        long totalCount = memberJpaRepository.totalCount(age);
+
+        members.forEach(m -> System.out.println("m = " + m));
+
+        assertThat(members.size()).isEqualTo(3);
+        assertThat(totalCount).isEqualTo(9);
     }
 
     private void close() {
