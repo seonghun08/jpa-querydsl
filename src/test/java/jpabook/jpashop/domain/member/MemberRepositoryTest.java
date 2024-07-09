@@ -8,26 +8,37 @@ import jpabook.jpashop.domain.Team;
 import jpabook.jpashop.repository.MemberDto;
 import jpabook.jpashop.repository.MemberRepository;
 import jpabook.jpashop.repository.TeamRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Commit;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.list;
 
 @Transactional
 @SpringBootTest
 class MemberRepositoryTest {
 
-    @Autowired EntityManager entityManager;
-    @Autowired TeamRepository teamRepository;
-    @Autowired MemberRepository memberRepository;
+    @Autowired
+    EntityManager entityManager;
+    @Autowired
+    TeamRepository teamRepository;
+    @Autowired
+    MemberRepository memberRepository;
+
+    @BeforeEach
+    void beforeEach() {
+        memberRepository.deleteAll();
+    }
 
     @Test
     @Commit
@@ -111,6 +122,126 @@ class MemberRepositoryTest {
         assertThat(listByName.get(0))
                 .isEqualTo(memberByName)
                 .isEqualTo(optionalByName.orElse(null));
+    }
+
+    @Test
+    void paging() {
+        // given
+        for (int i = 1; i < 10; i++) {
+            memberRepository.save(new Member("member" + i, 10));
+        }
+
+        final int age = 10;
+        final PageRequest pageRequest = PageRequest.of(
+                0, 3, Sort.by(Sort.Direction.DESC, "name"));
+
+        // when
+        Page<Member> page = memberRepository.findByAge(age, pageRequest);
+        Slice<Member> slice = memberRepository.findSliceByAge(age, pageRequest);
+
+        Page<MemberDto> memberDtoPage = page.map(m -> new MemberDto(m.getId(), m.getName(), null));
+
+        // then
+        List<Member> members = page.getContent();
+        long totalElements = page.getTotalElements();
+
+        members.forEach(System.out::println);
+        System.out.println("totalElements = " + totalElements);
+        memberDtoPage.getContent().forEach(System.out::println);
+
+        // page
+        assertThat(members.size()).isEqualTo(3);
+        assertThat(totalElements).isEqualTo(9);
+        assertThat(page.getNumber()).isEqualTo(0);
+        assertThat(page.isFirst()).isTrue();
+        assertThat(page.hasNext()).isTrue();
+
+        // slice
+        assertThat(slice.getContent().size()).isEqualTo(3);
+        assertThat(slice.getNumber()).isEqualTo(0);
+        assertThat(slice.isFirst()).isTrue();
+        assertThat(slice.hasNext()).isTrue();
+    }
+
+    /**
+     * bulk 연산 쿼리 주의점!!
+     * - JPA 는 영속성 컨텍스트를 통해 트랜잭션이 끝나는 시점에 쿼리를 한번에 보낸다.
+     * 이로 인해 같은 트랜잭션 내 조회 쿼리를 사용할 경우, 업데이트 쿼리가 아직 발생되지 않아 변경되지 않은 값이 조회된다.
+     * - 해당 문제로 인해 bulk 연산을 한 시점에 바로 flush() -> clear() 를 진행 하는 것이 안전하다.
+     */
+    @Test
+    void bulkUpdate() {
+        // given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 25));
+        memberRepository.save(new Member("member3", 30));
+        memberRepository.save(new Member("member4", 11));
+        memberRepository.save(new Member("member5", 20));
+
+        // when
+        int resultCount = memberRepository.bulkAgePlus(20);
+
+        /*
+         * @Modifying(clearAutomatically = true)
+         * clearAutomatically true 로 설정할 경우, 쿼리가 실행되고 영속성 컨텍스트를 날려준다.
+         */
+        // close(); // flush -> close
+
+        Member findMember = memberRepository.findByName("member5").get();
+        System.out.println("findMember = " + findMember); // close()를 호출하지 않으면 member5는 변경 전으로 조회
+
+        // then
+        assertThat(resultCount).isEqualTo(3);
+    }
+
+    @Test
+    public void findMemberLazy() {
+        // given
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("member1", 10, teamA);
+        Member member2 = new Member("member2", 20, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        close();
+
+        // when
+        List<Member> members = memberRepository.findAll();
+        // List<Member> members = memberRepository.findMemberFetchJoin();
+        members.forEach(m -> {
+            System.out.println("member = " + m.getName());
+            System.out.println("member.team = " + m.getTeam().getName());
+        });
+    }
+
+    @Test
+    void queryHint() {
+        // given
+        Member member = new Member("member1", 10);
+        memberRepository.save(member);
+        close();
+
+        // when
+        // Member findMember = memberRepository.findById(member.getId()).get();
+        Member findMember = memberRepository.findReadOnlyByName(member.getName());
+        findMember.setName("member2");
+
+        entityManager.flush();
+    }
+
+    @Test
+    void lock() {
+        // given
+        Member member = new Member("member1", 10);
+        memberRepository.save(member);
+        close();
+
+        // when
+        List<Member> result = memberRepository.findLockByName(member.getName());
     }
 
     private void close() {

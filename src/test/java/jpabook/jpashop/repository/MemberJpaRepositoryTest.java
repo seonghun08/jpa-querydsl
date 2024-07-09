@@ -1,6 +1,7 @@
 package jpabook.jpashop.repository;
 
 import jakarta.persistence.EntityManager;
+import jakarta.validation.constraints.Size;
 import jpabook.jpashop.domain.Member;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Random;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -73,9 +75,7 @@ class MemberJpaRepositoryTest {
 
     @Test
     void paging() {
-        for (int i = 1; i < 10; i++) {
-            memberJpaRepository.save(new Member("member" + i, 10));
-        }
+        saveMembers();
 
         final int age = 10;
         final int offset = 0;
@@ -89,6 +89,28 @@ class MemberJpaRepositoryTest {
 
         assertThat(members.size()).isEqualTo(3);
         assertThat(totalCount).isEqualTo(9);
+    }
+
+    @Test
+    void bulkUpdate() {
+        // given
+        memberJpaRepository.save(new Member("member1", 10));
+        memberJpaRepository.save(new Member("member2", 25));
+        memberJpaRepository.save(new Member("member3", 30));
+        memberJpaRepository.save(new Member("member4", 20));
+        memberJpaRepository.save(new Member("member5", 11));
+
+        // when
+        int resultCount = memberJpaRepository.bulkAgePlus(20);
+
+        // then
+        assertThat(resultCount).isEqualTo(3);
+    }
+
+    private void saveMembers() {
+        for (int i = 1; i < 10; i++) {
+            memberJpaRepository.save(new Member("member" + i, 10));
+        }
     }
 
     private void close() {
