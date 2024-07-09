@@ -8,7 +8,7 @@ import jpabook.jpashop.domain.item.Book;
 import jpabook.jpashop.domain.item.Item;
 import jpabook.jpashop.repository.ItemRepository;
 import jpabook.jpashop.domain.Member;
-import jpabook.jpashop.repository.MemberRepository;
+import jpabook.jpashop.repository.member.MemberRepository;
 import jpabook.jpashop.exception.NotEnoughStockException;
 import jpabook.jpashop.repository.order.OrderRepository;
 import jpabook.jpashop.service.OrderService;

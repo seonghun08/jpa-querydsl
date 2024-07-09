@@ -8,7 +8,7 @@ import jpabook.jpashop.domain.OrderItem;
 import jpabook.jpashop.domain.item.Item;
 import jpabook.jpashop.repository.ItemRepository;
 import jpabook.jpashop.domain.Member;
-import jpabook.jpashop.repository.MemberRepository;
+import jpabook.jpashop.repository.member.MemberRepository;
 import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.repository.order.OrderRepository;
 import jpabook.jpashop.domain.OrderSearch;

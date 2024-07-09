@@ -17,7 +17,7 @@ import java.util.List;
         name = "Member.findByNames",
         query = "select m from Member m where m.name = :name"
 )
-public class Member extends BaseTimeEntity {
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

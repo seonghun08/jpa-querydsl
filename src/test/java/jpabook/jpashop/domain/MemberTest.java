@@ -1,6 +1,7 @@
 package jpabook.jpashop.domain;
 
 import jakarta.persistence.EntityManager;
+import jpabook.jpashop.repository.member.MemberRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +19,8 @@ class MemberTest {
 
     @Autowired
     EntityManager entityManager;
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Test
     void testEntity() {
@@ -47,6 +50,26 @@ class MemberTest {
             System.out.println("members = " + m);
             System.out.println("-> member.team = " + m.getTeam());
         });
+    }
+
+    @Test
+    void JpaEventBaseEntity() throws Exception {
+        // given
+        Member member = memberRepository.save(new Member("member1"));// @PrePersist
+
+        Thread.sleep(1000);
+        member.setName("member2");
+
+        clear(); // @PreUpdate
+
+        // when
+        Member findMember = memberRepository.findById(member.getId()).get();
+
+        // given
+        System.out.println("findMember.getCreatedDate() = " + findMember.getCreatedDate());
+        System.out.println("findMember.getLastModifiedDate() = " + findMember.getLastModifiedDate());
+        System.out.println("findMember.getCreatedBy() = " + findMember.getCreatedBy());
+        System.out.println("findMember.getLastModifiedBy() = " + findMember.getLastModifiedBy());
     }
 
     private void clear() {

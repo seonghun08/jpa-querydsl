@@ -1,8 +1,9 @@
-package jpabook.jpashop.repository;
+package jpabook.jpashop.repository.member;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter @Setter
 public class MemberDto {
 
     private Long id;

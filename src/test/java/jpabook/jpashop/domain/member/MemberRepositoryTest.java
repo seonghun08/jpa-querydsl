@@ -5,8 +5,8 @@ import jakarta.transaction.Transactional;
 import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.domain.Team;
-import jpabook.jpashop.repository.MemberDto;
-import jpabook.jpashop.repository.MemberRepository;
+import jpabook.jpashop.repository.member.MemberDto;
+import jpabook.jpashop.repository.member.MemberRepository;
 import jpabook.jpashop.repository.TeamRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -242,6 +242,12 @@ class MemberRepositoryTest {
 
         // when
         List<Member> result = memberRepository.findLockByName(member.getName());
+    }
+
+    @Test
+    void callCustom() {
+        List<Member> members = memberRepository.findMemberCustom();
+        members.forEach(m -> System.out.println("member = " + m.getName()));
     }
 
     private void close() {
