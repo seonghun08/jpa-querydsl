@@ -1,5 +1,6 @@
 package jpabook.jpashop.repository.member;
 
+import jpabook.jpashop.domain.Member;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,5 +15,11 @@ public class MemberDto {
         this.id = id;
         this.name = name;
         this.teamName = teamName;
+    }
+
+    public MemberDto(Member member) {
+        this.id = member.getId();
+        this.name = member.getName();
+        this.teamName = null;
     }
 }
