@@ -1,4 +1,4 @@
-package jpabook.jpashop.repository.member;
+package jpabook.jpashop.repository.member.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import jpabook.jpashop.domain.Member;

@@ -1,13 +1,16 @@
 package jpabook.jpashop.domain.member;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.domain.Team;
-import jpabook.jpashop.repository.member.MemberDto;
+import jpabook.jpashop.repository.member.dto.MemberDto;
 import jpabook.jpashop.repository.member.MemberRepository;
 import jpabook.jpashop.repository.TeamRepository;
+import jpabook.jpashop.repository.member.dto.MemberSearchCondition;
+import jpabook.jpashop.repository.member.dto.MemberTeamDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static jpabook.jpashop.domain.QMember.member;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Transactional
@@ -37,7 +41,7 @@ class MemberRepositoryTest {
 
     @BeforeEach
     void beforeEach() {
-        memberRepository.deleteAll();
+        // memberRepository.deleteAll();
     }
 
     @Test
@@ -248,6 +252,63 @@ class MemberRepositoryTest {
     void callCustom() {
         List<Member> members = memberRepository.findMemberCustom();
         members.forEach(m -> System.out.println("member = " + m.getName()));
+    }
+
+    @Test
+    void searchByWhere() {
+        Team teamA = teamRepository.save(new Team("teamA"));
+        Team teamB = teamRepository.save(new Team("teamB"));
+
+        memberRepository.save(new Member("member1", 10, teamA));
+        memberRepository.save(new Member("member2", 15, teamA));
+        memberRepository.save(new Member("member3", 20, teamB));
+        memberRepository.save(new Member("member4", 25, teamB));
+        memberRepository.save(new Member("member5", 30, teamB));
+
+        MemberSearchCondition cond = new MemberSearchCondition();
+        cond.setAgeGoe(15);
+        cond.setAgeLoe(25);
+
+        List<MemberTeamDto> result = memberRepository.search(cond);
+        // result.forEach(System.out::println);
+
+        assertThat(result)
+                .extracting("name")
+                .contains("member2", "member3", "member4");
+    }
+
+    @Test
+    void search() {
+        Team teamA = teamRepository.save(new Team("teamA"));
+        Team teamB = teamRepository.save(new Team("teamB"));
+
+        memberRepository.save(new Member("member1", 10, teamA));
+        memberRepository.save(new Member("member2", 15, teamA));
+        memberRepository.save(new Member("member3", 20, teamB));
+        memberRepository.save(new Member("member4", 25, teamB));
+        memberRepository.save(new Member("member5", 30, teamB));
+
+        MemberSearchCondition cond = new MemberSearchCondition();
+        PageRequest pageRequest = PageRequest.of(0, 3);
+
+        Page<MemberTeamDto> result = memberRepository.searchComplex(cond, pageRequest);
+        result.forEach(System.out::println);
+    }
+
+    @Test
+    void querydslPredicateExecutorTest() {
+        Team teamA = teamRepository.save(new Team("teamA"));
+        Team teamB = teamRepository.save(new Team("teamB"));
+
+        memberRepository.save(new Member("member1", 10, teamA));
+        memberRepository.save(new Member("member2", 15, teamA));
+        memberRepository.save(new Member("member3", 20, teamB));
+        memberRepository.save(new Member("member4", 25, teamB));
+        memberRepository.save(new Member("member5", 30, teamB));
+
+        Iterable<Member> result = memberRepository.findAll(
+                member.age.between(20, 40).and(member.name.like("member%")));
+        result.forEach(System.out::println);
     }
 
     private void close() {

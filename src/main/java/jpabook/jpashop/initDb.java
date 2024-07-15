@@ -5,10 +5,12 @@ import jakarta.persistence.EntityManager;
 import jpabook.jpashop.domain.*;
 import jpabook.jpashop.domain.item.Book;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Profile("local")
 @RequiredArgsConstructor
 public class initDb {
 
@@ -16,8 +18,9 @@ public class initDb {
 
     @PostConstruct
     public void init() {
-        //initService.dbInit1();
-        //initService.dbInit2();
+        // initService.dbInit1();
+        // initService.dbInit2();
+        initService.dbInit3(); // member & team
     }
 
     @Component
@@ -63,6 +66,20 @@ public class initDb {
 
             Order order = Order.createOrder(member, delivery, orderItem1, orderItem2);
             em.persist(order);
+        }
+
+        public void dbInit3() {
+            Team teamA = new Team("teamA");
+            Team teamB = new Team("teamB");
+
+            em.persist(teamA);
+            em.persist(teamB);
+
+            for (int i = 0; i < 100; i++) {
+                Member member = new Member(
+                        "member" + i, i, i % 2 == 0 ? teamA : teamB);
+                em.persist(member);
+            }
         }
 
         private static Book createBook(String name, int price, int quantity) {

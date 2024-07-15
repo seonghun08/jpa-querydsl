@@ -4,11 +4,16 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Member;
+import jpabook.jpashop.repository.member.MemberQuerydslRepository;
 import jpabook.jpashop.repository.member.MemberRepository;
+import jpabook.jpashop.repository.member.dto.MemberSearchCondition;
+import jpabook.jpashop.repository.member.dto.MemberTeamDto;
 import jpabook.jpashop.service.MemberService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +24,7 @@ public class MemberApiController {
 
     private final MemberService memberService;
     private final MemberRepository memberRepository;
+    private final MemberQuerydslRepository memberQuerydslRepository;
 
     @GetMapping("/api/v1/members")
     public List<Member> findMembersV1() {
@@ -62,6 +68,26 @@ public class MemberApiController {
         Member findMember = memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
         return new UpdateMemberResponse(findMember.getId(), findMember.getName());
+    }
+
+    @GetMapping("/api/v3/members")
+    public List<MemberTeamDto> searchMemberTeam(MemberSearchCondition cond) {
+        return memberQuerydslRepository.search(cond);
+    }
+
+    @GetMapping("/api/v1/search")
+    public List<MemberTeamDto> searchV1(MemberSearchCondition cond) {
+        return memberRepository.search(cond);
+    }
+
+    @GetMapping("/api/v2/search")
+    public Page<MemberTeamDto> searchV2(MemberSearchCondition cond, Pageable pageable) {
+        return memberRepository.searchSimple(cond, pageable);
+    }
+
+    @GetMapping("/api/v3/search")
+    public Page<MemberTeamDto> searchV3(MemberSearchCondition cond, Pageable pageable) {
+        return memberRepository.searchComplex(cond, pageable);
     }
 
     @Data

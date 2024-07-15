@@ -3,10 +3,12 @@ package jpabook.jpashop.repository.member;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.QueryHint;
 import jpabook.jpashop.domain.Member;
+import jpabook.jpashop.repository.member.dto.MemberDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.*;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +16,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Transactional(readOnly = true)
-public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
+public interface MemberRepository
+        extends JpaRepository<Member, Long>, MemberRepositoryCustom, QuerydslPredicateExecutor<Member> {
 
     Optional<Member> findByName(String name);
 
@@ -33,7 +36,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     List<String> findUsernameList();
 
     // DTO 로 가져오는 방법 (dto 에 join fetch 사용은 안됨)
-    @Query("select new jpabook.jpashop.repository.member.MemberDto(m.id, m.name, t.name) from Member m join m.team t")
+    @Query("select new jpabook.jpashop.repository.member.dto.MemberDto(m.id, m.name, t.name) from Member m join m.team t")
     List<MemberDto> findMemberDto();
 
     // IN 절 활용법

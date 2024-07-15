@@ -1,8 +1,7 @@
 package jpabook.jpashop.controller;
 
-import jakarta.annotation.PostConstruct;
 import jpabook.jpashop.domain.Member;
-import jpabook.jpashop.repository.member.MemberDto;
+import jpabook.jpashop.repository.member.dto.MemberDto;
 import jpabook.jpashop.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

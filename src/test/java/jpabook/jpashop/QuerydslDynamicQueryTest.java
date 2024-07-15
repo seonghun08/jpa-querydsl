@@ -1,19 +1,16 @@
 package jpabook.jpashop;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.domain.QMember;
-import jpabook.jpashop.domain.QTeam;
 import jpabook.jpashop.domain.Team;
 import jpabook.jpashop.repository.TeamRepository;
-import jpabook.jpashop.repository.member.MemberDto;
+import jpabook.jpashop.repository.member.dto.MemberDto;
 import jpabook.jpashop.repository.member.MemberRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
